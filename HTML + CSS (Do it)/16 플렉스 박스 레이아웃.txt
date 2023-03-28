@@ -1,0 +1,100 @@
+16-1 플렉스 박스 레이아웃과 기본 속성들
+
+플렉스 박스 레이아웃(felx box layout)
+= 그리드 레이아웃을 기본으로, 플렉스 박스를 원하는 위치에 배치하는 것
+- 여유 공간에 따라 너비, 높이, 위치를 자유롭게 변형 가능
+	- 플렉스 항목 : 플렉스 컨테이너에 담기는 웹 요소
+	- 플렉스 컨테이너 : 플렉스 항목들을 묶은 요소
+	- 주축 : 플렉스 항목을 배치하는 기본 방향
+	- 교차축 : 주축과 교차(수직) 되는 방향
+
+display 속성
+= 배치 요소들을 감싸는 부모 요소를 플렉스 컨테이너로 지정
+= 기본형 : display: flex | inline-flex
+	- flex : 박스 레벨 요소로 정의
+	- inline-flex : 인라인 레벨 요소로 정의
+- 최신 모던 브라우저와 대부분의 구식 버전에서 지원하지만
+- 브라우저마다 플렉스 박스를 지원하는 방법이 달라, 브라우저 접두사를 붙여야 함
+	- display: -webkit-box;  /* iOS 6 이하, 사파리 3.1 */
+	- display: -moz-box;  /* 파이어폭스 19 이하 */
+	- display: -ms-box;  /* IE 10 */
+	- display: -webkit-flex;  /* 웹킷 구 버전 */
+	- display: flex;  /* 표준 스펙 */
+
+flex-direction 속성
+= 플렉스 항목의 배치 방향을 지정
+- 플렉스 컨테이너에서 지정
+= flex-direction: row[기본 값] | row-inverse | column | column-inverse
+
+flex-wrap 속성
+= 플렉스 항목을 한 줄 또는 여러 줄로 배치
+= flex-wrap: no-wrap[기본 값] | wrap | wrap-reverse
+	- no-wrap : [기본 값] 플렉스 항목들을 한 줄에 표시
+	- wrap : 여러 줄에 표시
+	- wrap-reverse : 여러 줄에 표시 + 기존 방향(교차점)과 반대로 배치
+
+flex-flow 속성
+= 플렉스 배치 방향(flex-direction)과 여러 줄 배치(flex-wrap)를 한꺼번에 지정
+= flex-flow: <플렉스 방향> <플렉스 줄 배치>
+	- [기본 값] flex-flow : row no-wrap;
+
+order 속성
+= 플렉스 항목의 배치 순서를 바꾸기
+- 플렉스 항목에서 지정
+= order : 0 | 숫자
+	- order 값에 지정된 순서에 따라 배치됨
+	- 값이 '0'이라면 소스에 입력한 순서대로 배치
+	- 음수는 '0'으로 취급
+
+flex 속성
+= 플렉스 항목의 크기 조절
+= flex : [<flex-grow> <flex-shrink> <flex-basis>] | auto | initial[기본 값]
+	- 플렉스 항목의 너비를 늘이거나 줄일 수 있도록 세 가지 값을 이용해 표시
+		- flex-grow : 늘릴 비율
+		- flex-shrink : 줄일 비율
+		- flex-basis : 기본 크기 (0 : 인수 값을 함께 사용 / auto : 너비 값을 사용)
+	- initial : [기본 값] 항목의 width/height 값에 의해 크기가 결정되는데
+		플렉스 컨테이너의 공간이 부족할 경우, 최소 크기까지 줄임 (확대 x / 축소 o)
+		(=== flex : 0 1 auto;)
+	- auto : 항목의 width/height 값에 의해 크기가 결정되지만
+		플렉스 컨테이너의 공간에 따라 늘이거나 줄임 (확대 o / 축소 o)
+		(=== flex : 1 1 auto;)
+	- none : 확대 x / 축소 x
+		(=== flex : 0 0 auto;)
+	ex ) flex : 1 1 0;  /* 늘이거나 줄이지 않음 */
+	      flex : 1 1 0;  /* 2배 늘이거나 2배 줄임 */
+
+
+
+16-2 플렉스 박스 항목 배치를 위한 속성들
+
+justify-content 속성
+= 플렉스 항목을 주축 방향으로 배치할 때의 기준
+- 플렉스 컨테이너에서 지정
+= justify-content : flex-start | flex-end | center | space-between | space-around
+	- flex-start : 주축의 시작점을 기준으로 배치
+	- flex-end : 주축의 끝점을 기준으로 배치
+	- center : 주축의 중앙을 기준으로 배치
+	- space-between : 처음과 마지막 플렉스 항목을 양 끝점에 배치한 후, 중앙 항목들은 같은 간격으로 배치
+	- space-around : 모든 플렉스 항목들을 같은 간격으로 배치
+
+align-items 속성과 align-self 속성
+= 교차축을 기준으로 하는 배치 방법을 조절
+1.  align-items 속성
+- 플렉스 컨테이너에서 지정
+= align-itmes : stretch[기본 값] | flex-start | flex-end | center | baseline
+	- stretch : [기본 값] 플렉스 항목을 확해 교차축을 꽉 채움
+	- flex-start : 교차축의 시작점을 기준으로 배치
+	- flex-end : 교차축의 끝점을 기준으로 배치
+	- center : 교차축의 중앙을 기준으로 배치
+	- baseline : 시작점과 글자 기준선이 가장 먼 플렉스 항목을 시작점에 배치 한 후,
+		그 글자의 기준선과 다른 항목의 기준선을 맞추어 배치
+2.  align-self 속성
+= 특정 플렉스 항목을 개별적으로 배치 가능
+	- 플렉스 항목에서 지정
+= align-self : auto | stretch | flex-start | flex-end | center | baseline
+	- auto : 플렉스 항목의 부모 속성 값을 상속받음
+
+align-content 속성
+= 플렉스 항목이 여러 줄로 표시될 때, 교차축 기준의 배치 방법을 지정
+= align-content : flex-start[기본 값] | flex-end | center | space-between | space-around

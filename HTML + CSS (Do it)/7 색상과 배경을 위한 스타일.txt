@@ -1,0 +1,152 @@
+7-1 웹에서 색상 표현하기
+
+16진수 표기법
+ex ) #ffffff
+- 두자리씩 중복될 경우, 줄여 사용 가능
+	ex ) #ffff00 = #ff0
+
+rgb/rgba 표기법
+ex ) color : rgb(255,0,0)
+- 투명도를 조절할 때는 마지막에 알파값 추가
+	- 알파값 : 불투명도를 나타내는 값 / 0~1의 값 (1은 불투명, 0은 투명)
+
+hsl/hsla 표기법
+ex ) color : hsl(240, 100%, 50%)
+- 색상(hue), 채도(saturation), 밝기(light)
+- 투명도를 조절할 때는 마지막에 알파값 추가
+
+색상 이름 표기법
+- 기본 색상 16가지
+- 모든 브라우저에서 표현할 수 있는 색상인 웹 안전 색상은 모두 216가지
+
+
+
+7-2 배경 색과 배경 이미지
+
+background-color 속성
+= 웹 문서의 요소에 배경색 지정
+- 배경 색은 상속되지 않음
+	- 기본적으로 투명해서 비치는 것일 뿐이지 상속된 것은 아님
+
+background-clip 속성
+= 배경 적용 범위 조절
+- { border-box, padding-box, content-box }
+	- border-box : 테두리(border)까지 적용
+	- padding-box : 테두리를 뺀 패딩(padding) 범위까지 적용
+	- content-box : 내용 부분에만 적용
+
+background-image 속성
+= 배경 이미지 파일 경로 지정
+- 이미지 크기와 상관없이, 반복된 배경으로 이미지를 채움
+- 여러 이미지 사용 가능, 첫 번째 이미지부터 순서대로 표시
+- url 형식으로 사용
+= background-image : url('파일경로');
+
+background-repeat 속성
+= 배경 이미지의 반복 방법을 지정
+- { repeat(기본값), repeat-x, repeat-y, no-repeat }
+
+background-size 속성
+= 배경 이미지 크기 조절
+	- auto(기본값) : 원래 배경 이미지 크기만큼 표시
+	- contain : 요소 안에 배경 이미지가 다 들어오도록 이미지를 확대/축소
+	- cover : 배경 이미지로 요소를 모두 덮도록 이미지를 확대/축소
+	- <크기 값>
+	- <백분율> : 배경 이미지가 들어갈 요소의 크기를 기준
+
+background-position 속성
+= 배경 이미지를 반복하지 않을 경우, 배경 이미지를 표시할 위치 지정
+= background-position : <수평 위치> <수직 위치>;
+- { left, center, right, top, bottom, <백분율>, <길이 값> }
+- 값을 하나만 지정할 경우
+	- 그 값은 수평 위치 값으로 간주
+	- 수직 위치 값은 50%나 center로 간주
+
+background-origin 속성
+= 배경 이미지를 배치할 기준 지정
+- { border-box, padding-box, content-box }
+	- border-box : 테두리(border)가 기준
+	- padding-box : 테두리를 뺀 패딩(padding)이 기준
+	- content-box : 내용 부분이 기준
+
+background-attachment 속성
+= 배경 이미지를 고정하는 속성
+- { scroll(기본값), fixed }
+	- scroll(기본값) : 화면 스크롤과 함께 배경 이미지도 스크롤 됨
+	- fixed : 화면이 스크롤되더라도 배경 이미지는 고정
+
+background 속성
+= 배경 관련 속성을 줄여서 표기
+- 각 속성 값이 다르므로 표기 순서는 상관없음
+
+
+
+7-3 그러데이션 효과로 배경 꾸미기
+
+그러데이션과 브라우저 접두사
+- 그러데이션은 크기가 없는 배경 이미지이므로, background-image나 background 속성에서 사용
+- 그러데이션 속성은 표준화 됨
+- 구형 모던 브라우저에서는 브라우저 접두사를 붙여야 동작함
+	- -webkit- : 사파리 5.1~6.0
+	- -moz- : 파이어폭스 3.6~15
+	- -o- : 오페라 11.1~12.0
+
+선형 그러데이션
+= 색상이 수직이나 수평 또는 대각선 방향으로 일정하게 변하는 것
+- 방향과 색상이 필요
+= linear-gradinet( <각도> to <방향>, color-stop, [color-stop, ... ] );
+	ex ) backgournd : linear-gradient(to top bottom, blue, white);
+	 - 브라우저별, 버전별 사용법이 조금씩 다르므로 구분해 사용
+1. 방향
+- [표준 구문] 끝 지점을 기준으로 'to'키워드와 함께 사용
+- [접두사 구문] 예전 모던 브라우저에서는 접두사를 사용해야 하는데, 기준이 다름
+	- -webkit- : 그러데이션 시작 위치 기준
+	- -moz- : 그러데이션 끝 위치 기준, 키워드 to 사용하지 않음
+	- -o- : 그러데이션 끝 위치 기준, 키워드 to 사용하지 않음
+2. 각도
+= 그러데이션이 끝나는 각도
+- 단위는 deg (상단 0deg을 기준으로 시계방향)
+- 예전 모던 브라우저에서도 각도는 똑같이 사용
+3. 색상 중지 점
+= 색상이 바뀌는 지점
+- 색상만 지정할 수도 있고, 색상과 함께 중지 점의 위치도 함께 지정 가능
+- 위치 미지정 시 50%로 간주
+ex ) background : linear-gradient(to bottom, #06f, white 30%, #06f)
+	- 시작 지점으로 부터 30% 위치의 중지 점
+
+원형 그러데이션
+= 원이나 타원의 중심부터 동심원을 그리며 바깥 방향으로 색상이 바뀜
+- 색상이 바뀌기 시작하는 원의 중심과 크기를 지정하고 그러데이션의 모양을 지정
+= radial-gradient( <모양> <크기> at <위치>, color-stop, [color-stop, ...] );
+	ex ) backgroud : radial-gradient(circle at 10% 10%, white, yellow, red);
+1. 모양
+- { circle(원형), ellipse(타원형) }
+- 미지정 시 ellipse(타원형)으로 간주
+2. 위치
+= 그러데이션이 시작하는 원의 중심
+- [표준 구문] '모양'과 '크기' 속성 다음에 'at' 키워드와 함께 위치 값을 지정
+- [접두사 구문] at 키워드 없이, 구문의 맨 앞에 위치 값 지정
+	ex ) background : -o-radial-gradient(10% 10%, circle, white, blue);
+- { left, center, right, top, bottom, <백분율> }
+	- 미지정 시 center로 간주
+3. 크기
+= 어디까지 번저나가는지
+	- closest-side : 가장 가까운 모서리까지
+	- closest-corner : 가장 가까운 코너까지
+	- farthest-side : 가장 먼 모서리까지
+	- farthest-corner(기본값) : 가장 먼 코너까지
+4. 색상 중지 점
+= 색상이 바뀌는 지점
+- 색상만 지정할 수도 있고, 색상과 함께 중지 점의 위치도 함께 지정 가능
+- 위치 미지정 시 50%로 간주
+ex ) background : radial-gradient(red, yellow 20%, skyblue);
+
+그러데이션 제너레이터
+- CSS gradient generator 사이트를 이용할 수도 있음
+
+그러데이션 반복(패턴)
+- repeating-linear-gradient : 선형 그러데이션 반복
+	ex ) background : repeating-linear-gradient(yellow, red 20px);
+- repeating-radial-gradient : 원형 그러데이션 반복
+- 문서 배경에 2개 이상의 색상을 반복해 표시할 때 유용하게 사용 >> '패턴' 만들기
+	ex ) background : repeating-linear-gradient(yellow, yellow 20px, red 20px, red 40px);
