@@ -1,0 +1,451 @@
+11-1 에크마스크립트 2015의 기능 복습하기
+
+매개변수의 기본값
+- 함수의 매개변수에 값이 넘어오지 않더라도 사용할 기본값을 지정 가능
+
+전개 구문(spread syntax)
+= 값을 펼쳐주는 구문
+- 전개 구문을 어디에 사용하느냐에 따라 '나머지 매개변수' 또는 '전개 구문'이라고 함
+- 전개 구문에서는 '...'기호를 사용하고, 다양한 방법으로 사용 가능
+1.. 나머지 매개변수로 사용할 때
+- 함수 선언 시 몇 개의 인수를 받게 될지 알 수 없는 경우에 사용
+	- 매개변수의 개수를 고정하기 어려우므로 전개 구문을 사용해서 매개변수를 하나의 이름으로 선언
+	
+ex ) function addNum(...numbers) {
+        let sum = 0;
+        for (let number of numbers)
+            sum += number;
+        return sum;
+}
+2.. 전개 구문을 사용해 배열 연결하기
+- 배열에서 전개 구문을 사용하면 배열에 있는 값만 꺼내 와서 펼칠 수 있으므로, 배열 연산에서 자주 사용
+ex ) 배열 2개를 연결해서 새로운 배열을 만들 시, concat() 메서드를 사용하는 것 보다 전개 구문이 더 간단함
+        const animal = ["bird", "cat"]
+        const fruits = ["apple", "banana", "cherry"]
+        animal.concat(fruits)  // ["bird", "cat", "apple", "banana", "cherry"]
+        [...animal, ...fruits]  // ["bird", "cat", "apple", "banana", "cherry"]
+3.. 전개 구문을 사용해 배열 복사하기
+- 배열이나 객체는 참조형 변수
+	- 배열을 복사해도 실제로 값이 복사되는 것이 아니라, 배열이 저장된 메모리 주소가 복사됨
+	- 복사한 배열의 값을 수정하면 원래 배열도 수정됨
+- 전개 구문(...)을 사용해 배열을 복사한 후 수정하면, 원래 배열은 수정되지 않음
+ex ) const mine = [...fruits]  // ["apple", "grape", cherry]
+      mine[1] = "orange"
+      fruits  // ["apple", "grape", cherry]
+      mine  // ["apple", "orange", cherry]
+
+객체의 프로퍼티
+- 일반적으로 객체의 프로퍼티는 점 표기법을 사용해 접근
+- ES6부터는 대괄호([])를 사용할 수도 있고, 프로퍼티 이름에 계산식을 사용할 수도 있음
+1.. 대괄호 표기법
+- 대괄호([]) 표기법을 사용하면, 프로퍼티 이름을 좀 더 다양하게 만들 수 있음
+	- 프로퍼티 이름에 공백 사용 시 점(.) 표기법은 에러가 뜨지만, 대괄호([]) 표기법은 가능
+- 대괄호 안에 입력하는 프로퍼티 이름은 문자열로 써야 함
+2.. 계산된 프로퍼티 이름(computed property name)
+= ES6에서는 괄호 표기법을 사용해서 함수나 계산식을 프로퍼티 이름으로 사용할 수 있음
+- [ex] 'fn()' 함수를 정의한 후, 이 함수를 프로퍼티 이름으로 사용 가능
+	- 이 때 함수의 반환값이 프로퍼티 이름이 됨
+	- 템플릿 문자열을 사용하면, 프로퍼티 이름에 계산식 사용 가능
+ex ) function fn () {
+        return "result";
+      }
+      function add(a, b) {
+        return (a+b);
+      }
+      const obj = {
+        [fn()] : "함수 키",
+        [`${add(10, 20)} key`] : "계산식 키"
+      }
+      obj
+      // obj = {
+      //     result: "함수 키",
+      //     30 key: "계산식 키"
+      // }
+3.. 프로퍼티 값 단축하기
+- 변수에 저장된 값을 가져와서 객체의 프로퍼티로 사용해야 할 경우가 있음
+	- [ex] 프롬포트 창이나 폼에서 값을 입력받고 해당 값을 객체의 프로퍼티로 사용하는 경우
+- 생성자 함수로 객체를 정의 가능
+- 변수와 프로퍼티 이름이 같으면 다음과 같이 줄여서 사용 가능
+ex ) function makeUser(name, age) {
+        return {
+          name,
+          age
+        }
+      }
+      let user2 = makeUser("한라산", 27)
+      user2  // {name: "한라산", age: 27}
+
+객체에서 심벌키 사용하기
+= 심벌 : ES6 이후에 추가된 새로운 원시 자료형
+	- 한 번 정의하면 값을 변경할 수 없고, 유일한 값을 가짐
+	- 그래서 2명 이상의 개발자가 하나의 프로그램을 개발할 때 변수나 프로퍼티 이름을 같게 만드는 실수를 피할 수 있음
+ex ) let id1 = Symbol()
+      let id2 = Symbol()
+      id1 === id2  // false
+1.. 심벌을 사용해 프로퍼티 정의하기
+= 프라이빗 객체 : 일부 정보를 드러내고 싶지 않을 때 사용하는 심벌을 사용해 만든 객체
+ex ) const id = Symbol("id")
+      const tel = Symbol("telephone number")
+      const member = {
+        name : "Kim",
+        age : 25,
+        [id] : 1235,
+        [tel] : function () {
+          alert(prompt("전화번호 : "));
+        }
+      }
+- 객체의 프로퍼티키로 사용한 심벌은 겉으로 드러나지 않음
+	- for...in 문이나 Object.keys(), Object.values(), Object.entries()에서 키에 접근해도 심벌키는 접근 불가
+	- 중요한 프로퍼티를 외부에 감출 때 매우 유용
+2.. 심벌키에 접근하기
+- 심벌키를 사용한 프로퍼티나 메서드에 접근하려면 대괄호를 사용
+- 심벌키를 사용한 메서드를 실행할 때는 대괄호의 오른쪽에 소괄호를 붙임
+ex ) member[id]  // 1235
+      member[tel]()  // 프롬프트 창에 전화번호를 입력하면 알림 창에 표시됨
+
+전역 심벌
+- 심벌은 만들 때마다 유일한 값을 가지지만, 상황에 따라 이미 만든 심벌을 다른 곳에서 사용해야 할 경우가 있음
+= 전역 심벌(global symbol) : 여러 곳에서 같이 사용할 수 있는 심벌
+	- 전역 심벌은 전역 심벌 레지스트리에 저장됨
+	- 전역 심벌 레지스트리에 접근하려면 Symbol.for() 메서드와 Symbol.keyFor() 메서드를 사용해야 함
+1.. Symbol.for() 메서드
+= 키를 인수로 받고 전역 심벌 레지스트리를 뒤져서 키에 해당하는 심벌을 찾음
+- 레지스트리에 키에 맞는 심벌이 있으면 해당 심벌을 반환
+	- 그렇지 않으면, 새로운 심벌을 만들어서 반환
+= 기본형 : Symbol.for(키)
+ex ) let tel = Symbol.for("tel")  // 처음이므로 심벌을 생성
+      let phone = Symbol.for("tel")  // tel 키에 대한 심벌이 이미 있으므로, 가져와서 사용
+      tel === phone  // true
+2.. Symbol.keyFor() 메서드
+= 심벌값을 인수로 받아서 전역 심벌 레지스트리에 저장된 심벌값의 키를 가져옴
+= 기본형 : Symbol.keyFor(심벌값)
+ex ) Symbol.keyFor(phone)  // "tel"
+	- 앞에서 만든 phone 변수에 할당된 전역 심벌키를 가져오기
+
+
+
+11-2 구조 분해 할당하기
+
+구조 분해 할당(=디스트럭팅(destructing))이란
+= 주어진 자료의 구조를 분해해서 변수에 할당하는 기능
+- 배열이나 객체에는 하나의 변수에 다양한 값이 있는데, 그 중에서 일부만 꺼내 다른 변수로 할당할 때 편리하게 사용 가능
+1.. 배열 구조 분해 할당하기
+- 구조 분해 할당을 사용하면 코드를 간결히 할 수 있음
+ex ) let [apple, peach] = ["사과", "복숭아"]
+      apple  // "사과"
+      peach  // "복숭아"
+- 변수를 먼저 선언한 후 구조 분해할 수도 있음
+ex ) const fruits = ["사과", "복숭아"]
+      let [apple, peach] = fruits
+      apple  // "사과"
+      peach  // "복숭아"
+2.. 일부 값만 구조 분해 할당하기
+- 구조 분해는 값의 일부만 변수에 할당할 때 더욱 편리
+ex ) let [spring, , fall, ] = ["봄", "여름", "가을", "겨울"]
+      spring  // "봄"
+      fall  // "가을"
+3.. 나머지 변수를 사용해 구조 분해 할당하기
+- 구조 분해에서 일부 값을 변수로 지정한 후, 나머지 값을 묶어서 하나의 변수로 할당 가능
+= 나머지 변수(rest variable) 나머지 값을 묶어서 만든 변수
+	- 나머지 변수를 만들 때는 변수 이름 앞에 ...를 붙임
+	- 나머지 변수에 할당하는 값은 마지막에 오는 값이어야 함 (중간의 값을 묶을 수 없음)
+ex ) let [teacher, ...student] = ["Kim", "Lee", "Park", "Choi"]
+      teacher  // "Kim"
+      student  // ["Lee", "Park", "Choi"]
+4.. 두 변수의 값 교환하기
+- 임시 변수를 사용할 필요 없이, 구조 분해를 사용하면 한 번에 값을 교환 가능
+ex ) [x, y] = [y, x]
+
+객체 구조 분해
+- 객체에서도 구조 분해를 사용 가능
+- 변수 이름은 프로퍼티나 메서드 이름을 똑같이 사용함
+	- 객체에는 순서가 없으므로 키 이름과 변수 이름이 같아야 해당 키를 찾아서 값을 가져올 수 있기 때문
+= 기본형 : {var1, var2, ...} = {var1:값1, var2:값2, ...}
+ex ) const mamber = {
+        name : "Kim",
+        age : 25
+      }
+      let {name, age} = member
+      name  // "Kim"
+      age  // 25
+- 객체 프로퍼티키에 접근하지 않고 변수를 사용해서 프로그래밍할 수 있음
+1.. 새로운 변수 이름 사용하기
+- 다른 변수 이름으로 저장 가능
+ex ) let {name : userName, age : userAge} = member
+      userName  // "Kim"
+      userAge  // 25
+2.. 중첩된 객체 구조 분해하기
+= 중첩 객체 : 객체 안에 다른 객체를 포함하고 있는 객체
+ex ) const student = {
+        name : "도레미",
+        score = {
+          history : 85,
+          science : 94
+        },
+        friends : ["Kim", "Lee", "Park"]
+      }
+      let { name, score : {history, science}, friends : [f1, f2, f3]} = student
+      history  // 85
+      f2  // "Lee"
+- 객체에 들어 있는 객체 이름 score나 배열 이름 friends는 변수로 할당하지 않고,
+	그 안의 값만 구조 분해해서 변수로 할당할 수 있다는 것에 주의
+
+
+
+11-3 배열을 변형하는 메서드
+
+배열 요소에 같은 함수 적용하기 - map() 메서드
+= 각 배열 요소에 똑같은 함수를 실행한 후 그 결과를 새로운 배열로 반환하는 메서드
+- map() 메서드에서 실행하는 함수는 콜백 함수(다른 함수의 매개변수로 사용할 수 있는 함수)
+= 기본형 : map(함수(값))  // 요소의 값을 함수의 인수로 사용
+ex ) let numbers = [1, 2, 3, 4, 5]
+      let newNumbers = numbers.map(number => number * 2);
+      newNumbers  // [2, 4, 6, 8, 10]
+- map() 메서드에서 콜백 함수를 실행할 때 요소의 값을 받을 수도 있고, 인덱스나 배열 전체를 받을 수도 있음
+	= 기본형 : map(함수(값, 인덱스))  // 요소의 값과 인덱스를 함수의 인수로 사용
+	= 기본형 : map(함수(값, 인덱스, 배열))  // 요소의 값과 인덱스, 원래 배열을 함수의 인수로 사용
+	ex ) let numbers = [1, 2, 3, 4, 5]
+	      let newNumbers = numbers.map((number, index) => index + (number * 3))
+	      newNumbers  // [3, 7, 11, 15, 19]
+
+특정 조건으로 골라내기 - filter() 메서드
+= 특정 조건에 맞는 요소만 골라내는(filtering) 메서드
+- 배열 요소의 값이나 인덱스, 배열을 받아서 함수를 실행하고 return 문으로 반환한 값은 새로운 배열에 추가
+= 기본형 : filter(함수(값))
+	= filter(함수(값, 인덱스))
+	= filter(함수(값, 인덱스, 배열))
+ex ) let scores = [90, 35, 64, 88, 45, 92]
+      highScores = scores.filter(score => score >= 85)  // [90, 88, 92]
+ex ) let scores = [90, 35, 64, 88, 45, 92]
+      highScores2 = scores.filter( (score, index) => {
+        if (score >= 85) {
+          console.log(`index : ${index}, score : ${score}`);
+        }
+      });
+      // index : 0, score : 90
+      // index : 3, score : 88
+      // index : 5, score : 92
+
+값 하나로 누적하기 - reduce() 메서드
+= 배열 원소에 차례대로 함수를 실행해서 하나의 결괏값을 만듦
+= 누산기(accumulator) : 계산 결과를 하나의 변수에 계속 누적시키는 것
+= 기본형 : reduce(함수(누산기, 현잿값, 인덱스, 원래 배열), 초깃값)
+	- reduce() 메서드는 배열에 있는 값을 콜백 함수에 넘겨서 실행
+	- 이 때 콜백함수는 4개의 인수를 받음
+		- 누산기와 현잿값은 필수 인수
+		- 인덱스와 원래 배열은 필요한 경우에만 추가
+	- 누산기 : reduce() 메서드에 있는 함수를 실행하면서 생기는 결괏값을 임시로 보관하는 변수
+	- 초깃값 : 누산기의 초깃값 (생략 가능 / 생략 시 배열의 첫 번째 값을 초깃값으로 사용)
+ex ) let numbers = [1, 2, 3, 4, 5]
+      let result = numbers.reduce( (total, current) => total + current, 0);
+      result  // 15
+ex ) let numbers = [1, 2, 3, 4, 5]
+      let result = numbers.reduce( (total, number) => total + current * 2, 0);
+      result  // 30
+
+
+
+11-4 Map과 Set
+
+맵(Map)과 셋(Set)이 등장한 이유
+- ES6에서 기존의 객체나 배열과 비슷한 새로운 구조인 맵과 셋을 도입함
+- 기존 객체에서 가지고 있던 다음과 같은 문제들 때문
+	- 객체에서 '키'에는 문자열만 사용 가능 / 맵에서는 '키'에 모든 값을 사용 가능
+	- 객체에는 여러 정보를 담을 수 있지만, 프로퍼티 간에 순서가 없음 / 맵에서는 순서가 있음
+	- for 문과 같은 반복문을 사용해서 객체의 프로퍼티를 반복할 수 없음 / 맵과 셋에서는 for...of와 같은 반복문을 사용 가능
+	- 객체에는 프로퍼티의 개수를 알려주는 프로퍼티가 없음 / 맵과 셋에서는 별도의 프로퍼티가 있고, 이 외에도 객체보다 많은 메서드가 있음
+
+맵(Map)이란
+- '키'와 '값'이 하나의 쌍으로 이루어졌고 여러 개의 프로퍼티를 가지고 있는 자료 형태로, 객체와 비슷함
+- 객체의 프로퍼티키는 문자열과 심벌만 사용 가능 / 맵의 프로퍼티키는 모든 자료형을 사용 가능 (객체나 함수 또한 사용 가능)
+- 맵에 저장된 프로퍼티는 순서대로 접근하고 처리 가능
+1.. 맵 생성하기
+= 맵을 만들려면 new 예약어를 사용해서 Map 객체의 인스턴스를 만들어야 함
+	- 맵을 만든 후 set() 메서드를 사용해 키와 값을 추가해야 함
+= 기본형 : new Map()  // Map 객체를 만듦
+= 기본형 : set(키, 값)  // Map 객체에 프로퍼티를 추가함
+	- map.set() 메서드는 map을 반환하므로 콘솔 창에 즉시 map 내용을 표시함
+ex ) let bag = new Map()  // Map 객체의 인스턴스인 bag을 만듦
+      bag.set("color", "red")  // {"color" => "red"}
+= Map 객체를 만들 때 대괄호를 사용하면, 처음부터 프로퍼티를 지정할 수 있음
+	- 이 때 프로퍼티는 [키, 값] 형식을 사용해야 함
+= 기본형 :  new Map([
+                  [키1, 값1],
+                  [키2, 값2],
+                       ...
+               ]);
+ex ) let myCup = new Map([
+        ["color", "white"],
+        ["haveHandle", true],
+        ["material", "ceramic"],
+        ["capacity", "300ml"]
+      ]);
+2.. 맵에서의 체이닝
+= 체이닝(chaining) : set() 메서드를 이용해 여러 개의 맵의 프로퍼티를 추가할 때, 여러 줄의 소스를 연결해서 작성하는 것
+ex ) let bag = new Map()
+      bag.set("type", "mini").set("purpose", "daily")
+      bag  // {"color" => "red", "type" => "mini", "purpose" => "daily"}
+
+맵의 프로퍼티와 메서드
+1.. size 프로퍼티
+	= 맵 요소의 개수를 알려주는 프로퍼티
+	- 객체에서는 이런 프로퍼티가 없어서 직접 확인해야 함
+	ex ) bag.size  // 3
+2.. get() 메서드
+	= 해당 키의 값을 반환하는 메서드
+	= 기본형 : get(키)
+	ex ) bag.get("color")  // "red"
+	- 만약 맵에 없는 키를 지정하면 'undefined'를 반환
+3.. has() 메서드
+	= 해당 키가 맵에 있는지 체크하고, true 또는 false로 반환
+	= 기본형 : has(키)
+	ex ) bag.has("color")  // true
+4.. delete() 메서드, clear() 메서드
+	= delete() 메서드 : 지정한 키가 있는 프로퍼티를 삭제하고, 삭제에 성공하면 true를 반환
+		- 만약 없는 키를 삭제하려면 false를 반환
+	= 기본형 : delete(키)
+	ex ) bag.delete("type")  // true
+	= clear() 메서드 : 맵의 모든 요소를 삭제
+	= 기본형 : clear()
+5.. keys(), values(), entries() 메서드
+	- 맵은 이터러블(iterable) 객체여서 순서대로 요소를 처리할 수 있음
+		= 이터러블 객체 : 객체의 값을 순서대로 처리할 수 있는 객체
+	- 반면 객체는 순서가 없어서, 순서대로 처리하려면 이터러블 객체로 변환해야 함
+	- 맵에서 키나 값을 가져오는 메서드들도 이터러블 객체를 반환함
+	= keys() 메서드 : 각 요소의 키를 모아서 반환
+	= values() 메서드 : 각 요소의 값을 모아서 반환
+	= entries() 메서드 : [키, 값] 형태로 모든 요소를 반환
+		- entries() 메서드는 에크마스크립트 2017(ES8) 이후에 추가 됨
+		- 미 지원 시 키와 값을 가져올 때 entries() 대신 맵이름 그대로 사용
+	ex ) let myCup = new Map([
+	        ["color", "white"],
+	        ["haveHandle", true],
+	        ["material", "ceramic"],
+	        ["capacity", "300ml"]
+	      ]);
+	      myCup.keys()  // MapIterator {"color", "haveHandle", "material", "capacity"}
+	- (맨 앞에) MapIterator : 이터러블 객체라는 의미
+	- 반환된 값이 이터러블 객체이므로 for...of 문을 사용 가능
+	ex ) for (let key of myCup.keys()) {
+	        console.log(key);
+	      }
+
+셋(Set)이란
+- 배열은 키 없이 여러 개의 값을 모아 놓은 것으로, 값이 중복되어도 상관없음
+= 셋(Set) : 키 없이 여러 개의 값을 모아 놓았으므로 배열과 같지만, 값이 중복되지 않는다는 것이 배열과 다름
+1.. 셋 생성하기
+- new 예약어를 사용해서 Set 객체의 인스턴스를 만듦
+- 빈 셋을 만든 후 값을 추가할 수도 있고, 셋을 만들 때 배열을 인수로 받을 수도 있음
+= 기본형 : new Set()
+= 기본형 : new Set(배열)
+2.. 셋에 값을 추가하기
+= 기본형 : add(값)
+ex ) let numSet1 = new Set()
+      numSet1.add("one")  // {"one"}
+      numSet1.add("two")  // {"one", "two"}
+- 체이닝해서 값을 추가할 수 있음
+	ex ) let numSet1 = new Set().add("one").add("two")
+- 배열을 인수로 받을 수 있으며, 중복값이 있는 배열을 받아도 중복값을 모두 제거하고 셋을 만듦
+ex ) let numSet2 = new Set([1, 2, 3])
+      numSet2  // {1, 2, 3}
+      let numSet3 = new Set([1, 2, 1, 3, 1, 5])
+      numSet3  // {1, 2, 3, 5}
+
+셋(Set)의 프로퍼티와 메서드
+- 셋의 프로퍼티와 메서드는 맵의 프로퍼티, 메서드와 비슷함
+	- 셋의 경우 키가 없을 뿐
+= size : 셋 요소의 개수를 반환하는 프로퍼티
+= add(값) : 셋에 값을 추가
+= has(값) : 셋에 해당 값이 있는지 체크한 후 불린 값으로 반환
+= delete(값) : 셋에서 해당 값을 삭제
+= clear() : 셋을 비움
+- 셋에 있는 메서드 중 keys()와 values(), entries() 메서드는 for...of 문을 사용할 수 있도록 이터러블 객체를 반환함
+	- entries() 메서드를 사용할 때, 셋에는 키가 없으므로 [값, 값] 형식으로 반환
+ex ) let students = new Set(["도레미", "백두산"])
+      students.keys()  // {"도레미", "백두산"}
+      students.values()  // {"도레미", "백두산"}
+      students.enstries()  // {"도레미" => "도레미", "백두산" => "백두산"}
+
+
+
+11-5 이터레이터와 제너레이터
+
+이터러블 객체란
+= 이터러블(iterable) : '순서대로 처리할 수 있다'는 뜻
+- 예를 들어 배열은 인덱스와 값을 가지고 있으므로 인덱스 0부터 차례대로 값을 가져와서 처리할 수 있는데, 이런 객체를 '이터러블 객체'라고 함
+	- { 문자열, 배열, 맵(Map), 셋(Set) }
+1.. 이터러블 객체의 특징
+- 이터러블 객체에서는 다음과 같은 기능을 사용 가능
+	- for...of 반복문
+	- 전개 연산자(...)
+	- 구조 분해 할당
+- 객체 안의 정보를 순회할 때 일반적인 for 문보다 for...of 문을 사용하는 것이 훨씬 간단한데,
+	이렇게 하려면 일반 객체를 이터러블하게 만들어야 함
+2.. Symbol.iterator
+- 이터러블 객체에는 'Symbol.iterator'라는 메서드가 있음
+	- 'Symbol.iterator' 메서드를 실행하면 Iterator 객체가 반환됨
+ex ) let arr = [1, 2, 3, 4, 5]
+      let i = arr[Symbol.iterator]()
+      it  // Array Iterator {}
+3.. 이터레이터 객체와 next() 메서드
+- 이터레이터 객체(iterator objec)는 객체 안의 내용을 순서대로 하나씩 꺼낼 수 있음
+	- 순서대로 동작할 수 있는 이유는 이터레이터 객체에 next()라는 메서드가 있기 때문
+	- next() 메서드는 개체에서 다음 요소를 가져오는 역할을 함
+- 앞에서 it 변수에는 이터레이터 객체가 반환되므로, it에서 next() 메서드를 실행 가능
+ex ) it.next()  // {value: 1, done: false}
+      it.next()  // {value: 2, done: false}
+      it.next()  // {value: 3, done: false}
+      it.next()  // {value: 4, done: false}
+      it.next()  // {value: 5, done: false}
+      it.next()  // {value: undefined, done: true}
+= 이터레이터 프로토콜(iterator protocol) : 이터레이터 객체에는 next() 메서드가 있고,
+	이 메서드는 value와 done 프로퍼티가 있는 객체를 반환
+	- value : 다음 값
+	- done : 이터레이터 객체가 끝났는지의 여부
+= 이터레이터 프로토콜도 이터러블 객체가 되기 위해 지켜야 하는 조건임
+
+제너레이터 함수
+= ES6부터 포함된 제너레이터 함수를 사용하면, 배열이나 문자열 외에 일반 객체를 이터러블하게 만들 수 있음
+1.. 제너레이터 함수 만들기
+- 제너레이터 객체를 만들 때도 제너레이터 함수를 사용
+= 제너레이터 함수는 일반 함수와 구별하기 위해 function 다음에 * 기호를 붙여 작성하고,
+	 함수에 return 문 대신 yield 문을 사용
+	= 기본형 : function* 함수명() {
+	                ...
+	                yeild
+	              }
+= 제네레이터 함수를 사용해서 제네레이터 객체를 만들 때, 다음과 같이 함수 이름만 지정하면 됨
+	= 기본형 : 객체명 = 함수명()
+- 일반적인 함수를 실행하면, 함수 안에 있던 명령들이 모두 한꺼번에 실행됨
+- 제너레이터 함수는 함수 안의 명령을 한꺼번에 실행하지 않고, yield 문까지 실행하고 멈춤
+	- 다시 next() 메서드를 실행하면, 그 다음 yield 문을 실행
+	= 제너레이터 함수에서는 어느 부분에서 끊어서 진행할지 지정하는 것
+	- yield 다음에 오는 값은 이터러블 객체의 value로 넘겨질 값
+ex ) function* gen() {
+        yield 1;
+        yield 2;
+        yield 3;
+      }
+2.. 제너레이터 객체 만들기
+- 제너레이터 함수를 정의했으면, 그 함수를 사용해 객체를 만들 수 있음
+ex ) let g1 = gen()
+      g1  // gen {<suspended>}  (대기 상태(suspended))
+      g1.next()  // {value: 1, done: false}
+      g1.next()  // {value: 2, done: false}
+      g1.next()  // {value: 3, done: false}
+      g1.next()  // {value: undefined, done: true}
+      g1  // gen {<closed>}
+- g1 객체가 끝까지 도착하면, g1 객체를 확인했을 때 <closed>라고 표시됨
+	- 이 객체는 처음부터 끝까지 순서대로 모두 처리되었다는 의미
+3.. for...of문 사용하기
+- 제너레이터 함수로 만든 객체는 이터러블 객체이므로 for...of 문도 사용 가능
+ex ) 참고로 앞에서 만든 g1 객체는 처음부터 끝까지 모두 처리했으므로,
+	새로운 객체를 만들어서 for...of 문을 사용
+      let g2 = gen()
+      for (let i of g2) console.log(i);
+      // 1
+      // 2
+      // 3
+ex ) let g3 = gen()
+      g3.next()  // {value: 1, done: false}
+      for(let i of g3) console.log(i)  // 2, 3
