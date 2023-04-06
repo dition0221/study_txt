@@ -1,0 +1,208 @@
+13-1 비동기 처리 방식
+
+동기 처리 방식과 비동기 처리 방식
+= 동기 처리 방식 : 프로그래밍이 순서대로 진행됨
+- jsp는 기본적으로 한 번에 하나의 작업만 처리하는 싱글 스레드(single thread) 언어
+	- 스레드(thread) : 프로세스에서 작업을 실행하는 단위
+= 비동기 처리 방식 : 실행 시간이 다른 함수들을 원하는 처리 순서에 맞게 프로그래밍하는 것
+	- jsp는 시간이 걸리는 작업이 있을 경우 시간이 걸리는 작업을 따로 처리하고,
+		빨리 끝나는 작업을 먼저 처리함
+	- 하지만, 프로그램에 따라 이런 실행 순서를 조절해야 할 때도 있음
+- jsp의 3가지 비동기 방식
+	- 콜백 함수 : 함수 안에 또 다른 함수를 매개변수로 넘겨서 실행 순서를 제어
+		- 콜백 함수가 많아지면 가독성이 떨어질 수 있음
+		- 기존부터 사용
+	- 프로미스(promise) : Promise 객체와 콜백 함수를 사용해서 실행 순서를 제어
+		- ECMAScript 2015부터 도입
+	- async, await : async 함수와 await 예약어를 사용해서 실행 순서를 제어
+		- ECMAScript 2017부터 도입
+
+비동기 처리와 콜백 함수
+= 콜백 함수 : 다른 함수의 매개변수로 사용하는 함수
+1.. 함수 이름을 콜백으로 사용하기
+ex ) // 사용자가 커피를 주문한 후 3초 후에 커피가 준비되었다고 알려주는 프로그램
+	function order(coffee, callback) {
+	  console.log(`${coffee} 주문 접수`);
+	  setTimeout( () => {
+	    callback(coffee);
+	  }, 3000);
+	}
+	function display(result) {
+	  console.log(`${result} 준비 완료`);
+	}
+	order("아메리카노", display);
+2.. 익명으로 콜백 함수 작성하기
+- 콜백 함수 사용 시 함수 이름도 사용하지만, 한수 안에 직접 익명 함수로 작성하기도 함
+ex ) // A -> B -> C -> D -> stop! 을 1초 마다 표시하기
+	function displayLetter() {
+	    console.log("A");
+	    setTimeout( () => {
+	        console.log("B");
+	        setTimeout( () => {
+	            console.log("C");
+	            setTimeout( () => {
+	                console.log("D");
+	                setTimeout( () => {
+	                    console.log("stop!");
+	                }, 1000);
+	            }, 1000);
+	        }, 1000);
+	    }, 1000);
+	}
+	displayLetter();
+- 콜백 함수에 다른 콜백 함수가 계속 들어가면 소스의 가독성이 떨어지고, 디버깅이 어려움
+	- 콜백 지옥(callback hell) : 콜백이 계속 반복되는 상태
+
+
+
+13-2 프로미스
+
+프로미스(promise)
+- 콜백 지옥을 만들기 않기 위해 ES6에서 도입한 방법
+= 처리에 성공했을 때 실행할 콜백 함수와 성공하지 않았을 때 실행할 콜백 함수를 미리 약속하는 것
+
+promise 객체 만들기
+= 기본형 : new Promise(resolve, reject)
+	- 프로미스를 사용하려면, Promise 객체를 먼저 만들어야 함
+	- 성공 시 실행할 함수 resolve()와 실패 시 실행할 함수 reject()도 함께 지정
+- 프로미스는 객체를 생성(제작)하는 부분과 소비하는 부분으로 나뉨
+- 프로미스 제작 코드에서 '성공'과 '실패'를 확인한 후 소비 코드로 알려줌
+ex ) let likPizza = true;
+      const pizza = new Promise( (resolve, reject) =>{
+        if (likePizza) {
+          resolve("피자를 주문합니다.");
+        } else {
+          reject("피자를 주문하지 않습니다.");
+        }
+      });
+= 제작 코드(producing code) : promise 객체를 만드는 소스
+	- promise 객체가 하는 일은 실행 결과에 따라 resolve() 나 reject() 로 연결하는 것일 뿐
+	- 성공하거나 실패했을 때 실행할 명령을 가지고 있지는 않음
+	- promise 객체를 만들기만 할 뿐 실제 이 프로미스를 사용하지는 않음
+
+promise 객체 사용하기
+= 소비 코드(consuming code) : promise 객체를 사용하는 소스
+	- 프로미스는 객체를 생성하는 부분과 사용하는 부분으로 나뉨
+= 프로미스를 실행할 때는 then(), catch(), finally() 메서드를 사용함
+	- then() 메서드 : 프로미스에서 성공 시 실행할 함수나 명령을 연결함
+	- catch() 메서드 : 프로미스에서 실패 시 실행할 함수나 명령을 연결함
+	- finally() 메서드 : 프로미스에서 성공/실패와 관계없이 마지막에 실행하려고 할 때 사용
+ex ) pizza
+      .then(
+        result => console.log(result);
+      )
+      .catch(
+        err => console.log(err);
+      )
+      .finally(
+        () => console.log("완료")
+      );
+- then().catch().finally()는 소스를 읽기 편하도록 줄을 바꾼 하나의 문(statement)
+	- 체이닝으로 연결 되므로 가장 마지막에 세미콜론(;)을 붙임
+	- 가독성을 위해 줄바꿈을 해서 표현하는 것을 권장
+
+프로미스의 상태
+- 프로미스 : resolve() 함수나 reject() 함수를 매개변수로 받아서 실행하는 객체
+- 프로미스 객체는 자신의 상태를 저장했다가 resolve() 함수나 reject() 함수를 실행하면, 상태를 바꿈
+- 프로미스의 3단계 진행 상태
+	- pending : 처음 프로미스를 만들면 대기 상태(pending)가 됨
+	- fulfilled : 처리에 성공하면 이행 상태(fulfilled)가 됨
+	- rejected : 처리에 성공하지 못하면 거부 상태(rejected)가 됨
+- 프로미스는 fulfilled 상태인지, rejected 상태인지에 따라 결괏값을 넘겨줌
+	- 프로미스 자체에 두 가지 결괏값이 있는 것이 아니므로 주의
+
+콜백 함수로 여러 단계 연결하기
+- 프로그램은 몇 가지 함수를 계속 연결해서 사용하는 경우가 많음
+
+프로미스 체이닝
+- 비동기 작업을 순차적으로 처리해야 할 때 콜백 함수를 사용하면 간단하지만,
+	잘못 사용할 경우 콜백 지옥에 빠질 수 있음
+- 프로미스는 resolve와 reject를 사용해서 성공과 실패에 대한 동작을 명확하게 구별할 수 있고,
+	함수에 계속해서 함수를 포함시키지 않으므로 콜백 지옥을 벗어날 수 있는 좋은 방법
+= 프로미스 체이닝 : then() 메서드를 사용해서 여러 개의 프로미스를 연결하는 것
+	- 프로미스를 서로 연결해 여러 단계로 처리하는 것
+	ex ) A, B, C 각각 실행 시간이 다르지만 A 작업이 끝날 때까지 기다렸다가 B 작업을 하고,
+		다시 B 작업이 끝날 때 까지 기다렸다가 C 작업을 할 때
+	- 프로미스에서 then() 메서드를 실행하면 프로미스가 반환되기에 가능함
+		- 반환되는 값이 프로미스이므로 여기에 then() 메서드나 catch() 메서드를 연결 가능
+- 프로미스를 함수로 사용해서 다음 프로미스로 연결하기 위해 return 문을 사용해 프로미스를 반환
+	ex ) const pizza = () => {
+	        return new Promise ((resolve, reject) => {
+	          resolve("피자를 주문합니다.");
+	        });
+	      };
+	      pizza()  // 함수를 실행하면 프로미스가 반환 됨
+	      pizza().then((result) => console.log(result));
+- 각 단계 마다 이전 단계가 완료되어야 한다면, 프로미스를 사용해 연결
+	- then() 메서드에서 실행하는 함수마다 promise를 반환하도록 해야 함
+
+프로미스 소비 코드 줄여서 작성하기
+- then() 메서드에서 이전 프로미스의 result 값을 받아서 다른 함수의 인자로 사용할 때, 인자 생략 가능
+	ex ) pizza().then(result => step1(result)).then(result => console.log(result));
+		// 같음
+	      pizza().then(step1).then(console.log);
+
+
+
+13-3 fetch API
+
+프로미스를 반환하는 fetch
+= 서버에 자료를 요청하거나 자료를 받아올 때 사용하는 API
+	- XMLHttpRequest를 대신할 fetch API 등장
+	** fetch는 프로미스를 반환함
+= 기본형 : fetch(위치, 옵션)
+	- 위치 : 자료가 있는 URL이나 파일 이름
+	- 옵션 : GET이나 POST 같은 요청 방식 지정 (따로 지정하지 않으면 GET 메서드 사용)
+		- 이외에도 매개변수가 필요할 시 매개변수를 넣을 수 있음
+- Response 객체 : 지정한 파일을 가져오는 데 성공했을 때 반환되는 프로미스의 결괏값이 들어있음
+	ex ) fetch("student-2.json").then(response => console.log(response));
+	- 자료를 성공적으로 가져왔는지의 여부를 확인
+		- status 값이 200인지, 또는 ok 값이 true 인지 체크
+
+fetch 파일 가져오기
+- fetch를 사용할 경우, then() 함수를 연결하면서 이미 자료를 성공적으로 가져왔다는 전제가 생겼기 때문에 따로 if 문이 없음
+	- 그리고, 함수를 따로 선언하지 않고 then() 함수에서 필요한 명령을 실행
+- XMLHttpRequest 대신 fetch를 사용하면 프로미스로 동작하므로, 소스를 읽기 쉬울 뿐만 아니라 비동기를 쉽게 처리할 수 있음
+= json 파일을 객체로 변환하는 메서드 : json()
+	ex ) fetch("student-2.json")
+	        .then(response => response.json());
+
+
+
+13-4 async 함수와 await 예약어
+
+- 프로미스는 콜백 지옥이 생기지 않도록 소스를 읽기 쉽게 바꾼 것
+- 프로미스 체이닝은 소스가 복잡해질 수도 있음
+- 이런 문제를 줄이기 위해 ESMAScript2017부터 async 함수와 await 예약어가 등장
+
+async 함수
+= 함수 선언 시 async라는 예약어를 함께 사용하면, 그 함수 안에 있는 명령을 비동기적으로 실행 가능
+= 기본형 : async function() { ... }
+- async 예약어를 붙여 정의한 함수는 프로미스를 반환함
+	- return 문에서 새로운 Promise 객체를 만들 필요 없이, 바로 resolve를 적을 수 있음
+ex ) function whatsYourFavorite() {
+        let fav = "Javascript";
+        return new Promise((resolve, reject) => resolve(fav));      
+      }  // async를 사용해 아래와 같이 간단하게 만들 수 있음
+      async function whatsYourFavorite() {
+        let fav = "Javascript";
+        return fav;   
+      }
+
+await 예약어
+- 프로미스 체이닝이 너무 길어지면 소스를 이해하기 쉽지 않음
+= await 예약어를 사용해 이전 프로미스 결과를 받아서, 다음 프로미스로 연결해 주는 과정을 좀 더 쉽게 알아볼 수 있음
+	- 모든 프로미스 체이닝을 async와 await로 바꿀 필요는 없음
+- await는 async 함수에서만 사용 가능
+	- async는 프로미스를 반환할 때도 사용 가능하고, await 예약어와 함께 사용해서 비동기 방식을 처리할 수도 있음
+- '이 함수가 끝날 때까지 기다려!'라고 표시하는 것
+ex ) whatsYourFavorite()
+        .then(displaySubject)  // .then(response => displaySubject(response))
+        .then (console.log);  // .then (result => console.log(result));
+      // await는 async 함수에서만 사용 가능해서, async init() 함수를 따로 만든 후 await를 사용해 프로미스의 실행 순서를 지정
+      async function init() {
+        const fav = await whatsYourFavorite();
+        const result = await displaySubject(fav);
+        console.log(result);
+      }
+      init();
