@@ -5,6 +5,6 @@
 
 ---
 
-- HTML + CSS (Do it) : Do it! HTML5 + CSS3 웹 표준의 정석 (전면 개정 2판)
-- JavaScript (Deep Dive) : 모던 자바스크립트 Deep Dive 자바스크립트의 기본 개념과 동작 원리
-- JavaScript (Do it) : Do it! 모던 자바스크립트 프로그래밍의 정석
+- **HTML + CSS (Do it)** : Do it! HTML5 + CSS3 웹 표준의 정석 (전면 개정 2판)
+- **JavaScript (Deep Dive)** : 모던 자바스크립트 Deep Dive 자바스크립트의 기본 개념과 동작 원리
+- **JavaScript (Do it)** : Do it! 모던 자바스크립트 프로그래밍의 정석
