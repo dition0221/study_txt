@@ -23,7 +23,7 @@ ex )	객체명 {
 - 빈 객체 생성하기
 	= const 객체명 = {};
 	또는
-	= cost 객체명 = new Object();
+	= const 객체명 = new Object();
 5.. 프로퍼티 삭제하기
 = delete 객체명.키;
 - 키는 그대로 두고 값만 제거 할 수도 있음
